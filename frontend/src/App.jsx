@@ -1,99 +1,97 @@
 
-import './App.css'
+import { useState } from "react";
+import Navbar from "./components/Navbar";
+import SearchBar from "./components/SearchBar";
+import ChildcareCard from "./components/ChildcareCard";
+import "./App.css";
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedService, setSelectedService] = useState(null);
+
+  const childcareServices = [
+    {
+      name: "Little Stars Daycare",
+      location: "Lucknow",
+      ageGroup: "2-6 years",
+      rating: "4.8",
+    },
+    {
+      name: "Happy Kids Care",
+      location: "Lucknow",
+      ageGroup: "1-5 years",
+      rating: "4.6",
+    },
+    {
+      name: "Sunshine Childcare",
+      location: "Kanpur",
+      ageGroup: "2-7 years",
+      rating: "4.7",
+    },
+  ];
+
+  const filteredServices = childcareServices.filter((service) => {
+    const query = searchTerm.trim().toLowerCase();
+
+    return (
+      service.name.toLowerCase().includes(query) ||
+      service.location.toLowerCase().includes(query)
+    );
+  });
+
   return (
-    <div className="app">
-      <nav className="navbar">
-        <a className="brand" href="#home">
-          <span className="brand-icon">L</span>
-          Little Steps
-        </a>
+    <>
+      <Navbar />
 
-        <div className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#services">Childcare</a>
-          <a href="#about">About Us</a>
-        </div>
+      <main className="main-content">
+        <section className="hero-section">
+          <h1>Find the Best Childcare for Your Child</h1>
+          <p>Discover trusted childcare services near you.</p>
 
-        <button className="login-button">Sign In</button>
-      </nav>
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+        </section>
 
-      <main>
-        <section className="hero-section" id="home">
-          <div className="hero-content">
-            <span className="eyebrow">CARE YOU CAN TRUST</span>
+        <section className="childcare-section" id="services">
+          <h2>Popular Childcare Services</h2>
 
-            <h1>
-              Every child deserves
-              <span> a safe, happy start.</span>
-            </h1>
-
-            <p>
-              Discover trusted childcare centers that fit your
-              family's schedule, needs, and peace of mind.
-            </p>
-
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Enter your city or area"
-                aria-label="City or area"
+          <div className="card-container">
+            {filteredServices.map((service) => (
+              <ChildcareCard
+                key={service.name}
+                {...service}
+                onViewDetails={setSelectedService}
               />
-              <button>Find Childcare</button>
-            </div>
+            ))}
+          </div>
 
-            <p className="trust-note">
-              Trusted care. Flexible hours. Happier families.
+          {filteredServices.length === 0 && (
+            <p className="no-results">
+              No childcare services found. Try another search.
             </p>
-          </div>
-
-          <div className="hero-illustration" aria-label="Childcare illustration">
-            <div className="sun"></div>
-            <div className="illustration-card">
-              <span className="heart">♥</span>
-              <span className="toy">🧸</span>
-              <p>Little moments, big beginnings.</p>
-            </div>
-            <div className="floating-note">Care that fits your life ✨</div>
-          </div>
+          )}
         </section>
+        {selectedService && (
+  <div className="details-panel">
+    <h2>{selectedService.name}</h2>
 
-        <section className="services-section" id="services">
-          <div className="section-heading">
-            <span className="eyebrow">MADE FOR YOUR FAMILY</span>
-            <h2>Childcare that works for you</h2>
-            <p>Start exploring the care options your family needs.</p>
-          </div>
+    <p>📍 Location: {selectedService.location}</p>
+    <p>Age Group: {selectedService.ageGroup}</p>
+    <p>⭐ Rating: {selectedService.rating}</p>
 
-          <div className="service-grid">
-            <article className="service-card">
-              <span className="service-icon">☀️</span>
-              <h3>Daycare Centers</h3>
-              <p>Explore childcare options for your everyday routine.</p>
-            </article>
-
-            <article className="service-card">
-              <span className="service-icon">🌙</span>
-              <h3>Flexible Hours</h3>
-              <p>Find options for early mornings and late evenings.</p>
-            </article>
-
-            <article className="service-card">
-              <span className="service-icon">🛡️</span>
-              <h3>Safety First</h3>
-              <p>Review provider details and available safety information.</p>
-            </article>
-          </div>
-        </section>
+    <button
+      className="view-btn"
+      onClick={() => setSelectedService(null)}
+    >
+      Close Details
+    </button>
+  </div>
+)}
       </main>
-
-      <footer className="footer" id="about">
-        <p>Little Steps · Helping families find childcare with confidence.</p>
-      </footer>
-    </div>
-  )
+    </>
+  );
 }
 
-export default App
-
+export default App;
